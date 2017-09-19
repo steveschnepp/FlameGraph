@@ -137,9 +137,11 @@ clear:
 
 		# set state for various background threads
 		$state = "BACKGROUND" if $name =~ /C. CompilerThread/;
+		$state = "BACKGROUND" if $name =~ /Surrogate Locker Thread/;
 		$state = "BACKGROUND" if $name =~ /Signal Dispatcher/;
 		$state = "BACKGROUND" if $name =~ /Service Thread/;
 		$state = "BACKGROUND" if $name =~ /Attach Listener/;
+		$state = "BACKGROUND" if $name =~ /DestroyJavaVM/;
 
 	} elsif (/java.lang.Thread.State: (\S+)/) {
 		$state = $1 if $state eq "?";
