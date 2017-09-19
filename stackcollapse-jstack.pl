@@ -160,6 +160,7 @@ clear:
 		# fix state for various networking functions
 		$state = "NETWORK" if $func =~ /socketAccept$/;
 		$state = "NETWORK" if $func =~ /Socket.*accept0$/;
+		$state = "NETWORK" if $func =~ /SocketImpl.*receive0$/;
 		$state = "NETWORK" if $func =~ /socketRead0$/;
 
 	} elsif (/^\s*-/ or /^2\d\d\d-/ or /^Full thread dump/ or
