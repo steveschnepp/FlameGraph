@@ -105,7 +105,7 @@ my @stack;
 my $tname;
 my $state = "?";
 
-foreach (<>) {
+while (<>) {
 	next if m/^#/;
 	chomp;
 
