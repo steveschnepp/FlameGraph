@@ -105,13 +105,15 @@ my @stack;
 my $tname;
 my $state = "?";
 
+my %states_map = map {$_ => 1} @states;
+
 while (<>) {
 	next if m/^#/;
 	chomp;
 
 	if (m/^$/) {
 		# only include RUNNABLE states
-		goto clear unless grep { $state } @states;
+		goto clear unless $states_map{ $state };
 
 		# save stack
 		if (defined $tname) { unshift @stack, $tname; }
