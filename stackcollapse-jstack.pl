@@ -65,6 +65,7 @@ my $include_tid = 0;		# include thread IDs in stacks
 my $shorten_pkgs = 0;		# shorten package names
 my @states = qw(RUNNING);	# thread states to consider
 my $help = 0;
+my $quiet = 0;
 
 sub usage {
 	die <<USAGE_END;
@@ -77,6 +78,7 @@ USAGE: $0 [options] infile > outfile\n
 	--no-shorten-pkgs  # (don't) shorten package names (default: don't shorten)
 	--state            # Include this thread state. Can be multiple (default: RUNNING)
 	                   # Note that there is are special states named "BACKGROUND" & "NETWORK"
+	--quiet            # Remove any warning, only emits errors
 
 	eg,
 	$0 --no-include-tname stacks.txt > collapsed.txt
@@ -88,6 +90,7 @@ GetOptions(
 	'include-tid!'    => \$include_tid,
 	'shorten-pkgs!'   => \$shorten_pkgs,
 	'state=s'         => \@states,
+	'quiet!'          => \$quiet,
 	'help'            => \$help,
 ) or usage();
 $help && usage();
@@ -174,7 +177,7 @@ clear:
 		# skip these info lines
 		next;
 	} else {
-		warn "Unrecognized line: $_";
+		warn "Unrecognized line: $_" unless $quiet;
 	}
 }
 
