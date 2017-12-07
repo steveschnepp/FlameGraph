@@ -166,9 +166,11 @@ clear:
 		# fix state for epollWait
 		$state = "WAITING" if $func =~ /epollWait/;
 
-		# fix state for various networking functions
-		$state = "NETWORK" if $func =~ /socketAccept$/;
-		$state = "NETWORK" if $func =~ /Socket.*accept0$/;
+		# Accepting a socket is waiting. No CPU is used anywhere.
+		$state = "NETWORK_WAITING" if $func =~ /socketAccept$/;
+		$state = "NETWORK_WAITING" if $func =~ /Socket.*accept0$/;
+
+		# This is "used CPU".... elsewhere, but still used
 		$state = "NETWORK" if $func =~ /SocketImpl.*receive0$/;
 		$state = "NETWORK" if $func =~ /socketRead0$/;
 
