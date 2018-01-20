@@ -63,7 +63,7 @@ use Getopt::Long;
 my $include_tname = 1;		# include thread names in stacks
 my $include_tid = 0;		# include thread IDs in stacks
 my $shorten_pkgs = 0;		# shorten package names
-my @states = qw(RUNNING);	# thread states to consider
+my @states = qw(RUNNABLE);	# thread states to consider
 my $help = 0;
 my $quiet = 0;
 
@@ -76,7 +76,7 @@ USAGE: $0 [options] infile > outfile\n
 	--no-include-tid   # include/omit thread IDs in stacks (default: omit)
 	--shorten-pkgs
 	--no-shorten-pkgs  # (don't) shorten package names (default: don't shorten)
-	--state            # Include this thread state. Can be multiple (default: RUNNING)
+	--state            # Include this thread state. Can be multiple (default: RUNNABLE)
 	                   # Note that there is are special states named "BACKGROUND" & "NETWORK"
 	--quiet            # Remove any warning, only emits errors
 
