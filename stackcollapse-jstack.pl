@@ -74,6 +74,7 @@ use Getopt::Long;
 my $include_tname = 1;		# include thread names in stacks
 my $include_tid = 0;		# include thread IDs in stacks
 my $shorten_pkgs = 0;		# shorten package names
+my @collapse_frames = ();	# frames to collapse.
 my @states = qw(RUNNABLE);	# thread states to consider
 my $help = 0;
 my $statistics = 0;
@@ -86,6 +87,7 @@ USAGE: $0 [options] infile > outfile\n
 	--no-include-tname # include/omit thread names in stacks (default: include)
 	--include-tid
 	--no-include-tid   # include/omit thread IDs in stacks (default: omit)
+	--collapse-frame   # frames to by collapsing them into "...". (default: none)
 	--shorten-pkgs
 	--no-shorten-pkgs  # (don't) shorten package names (default: don't shorten)
 	--state            # Include this thread state. Can be multiple (default: RUNNABLE)
@@ -101,6 +103,7 @@ USAGE_END
 GetOptions(
 	'include-tname!'  => \$include_tname,
 	'include-tid!'    => \$include_tid,
+	'collapse-frame=s' => \@collapse_frames,
 	'shorten-pkgs!'   => \$shorten_pkgs,
 	'state=s'         => \@states,
 	'stats!'     => \$statistics,
@@ -184,12 +187,27 @@ clear:
 
 	} elsif (/^\s*(?:at|-) ([^\(]*)/) {
 		my $func = $1;
+		my $should_collapse;
+		for my $collapse_frame (@collapse_frames) {
+			if ($func =~ m/$collapse_frame/) {
+				$should_collapse = 1;
+				print STDERR "should_collapse($func =~ m/$collapse_frame/)\n";
+				last; # No need to test other patterns
+			}
+		}
+		my $processes_func = $func;
 		if ($shorten_pkgs) {
 			my ($pkgs, $clsFunc) = ( $func =~ m/(.*\.)([^.]+\.[^.]+)$/ );
 			$pkgs =~ s/(\w)\w*/$1/g;
-			$func = $pkgs . $clsFunc;
+			$processes_func = $pkgs . $clsFunc;
 		}
-		unshift @stack, $func;
+
+		if ($should_collapse) {
+			$processes_func = "...";
+		}
+
+		# Enqueue only if not already collapsed
+		unshift @stack, $processes_func unless $processes_func eq "..." && @stack && $stack[0] eq "...";
 
 		# fix state for epollWait
 		$state = "WAITING" if $func =~ /epollWait/;
