@@ -210,6 +210,7 @@ clear:
 
 		# fix state for epollWait
 		$state = "WAITING" if $func =~ /epollWait/;
+		$state = "WAITING" if $func =~ /sun.misc.Unsafe.park/;
 
 		# Accepting a socket is waiting. No CPU is used anywhere.
 		$state = "NETWORK_WAITING" if $func =~ /socketAccept$/;
