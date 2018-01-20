@@ -106,7 +106,7 @@ GetOptions(
 	'collapse-frame=s' => \@collapse_frames,
 	'shorten-pkgs!'   => \$shorten_pkgs,
 	'state=s'         => \@states,
-	'stats!'     => \$statistics,
+	'stats!'          => \$statistics,
 	'quiet!'          => \$quiet,
 	'help'            => \$help,
 ) or usage();
@@ -179,7 +179,7 @@ clear:
 		$state = $2 if $state eq "?";
 
 		# fix state for "jstack -F"
-		$state = "WAITING" if $state eq "BLOCKED";
+		$state = "WAITING"  if $state eq "BLOCKED";
 		$state = "RUNNABLE" if $state eq "IN_JAVA";
 		$state = "RUNNABLE" if $state eq "IN_NATIVE";
 		$state = "RUNNABLE" if $state eq "IN_NATIVE_TRANS";
