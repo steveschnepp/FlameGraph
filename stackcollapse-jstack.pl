@@ -191,7 +191,6 @@ clear:
 		for my $collapse_frame (@collapse_frames) {
 			if ($func =~ m/$collapse_frame/) {
 				$should_collapse = $collapse_frame;
-				print STDERR "should_collapse($func =~ m/$collapse_frame/)\n";
 				last; # No need to test other patterns
 			}
 		}
