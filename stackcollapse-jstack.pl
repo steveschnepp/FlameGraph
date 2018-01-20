@@ -24,6 +24,17 @@
 #        ...
 #        at java.lang.Thread.run(Thread.java:744)
 #
+# Alternate input (from jstat -F)
+
+# Thread 117034: (state = IN_JAVA)
+#  - java.lang.reflect.Array.newInstance(java.lang.Class, int) @bci=2, line=75 (Compiled frame; information may be imprecise)
+#  - java.util.Arrays.copyOf(java.lang.Object[], int, java.lang.Class) @bci=21, line=3212 (Compiled frame)
+#  - java.util.Arrays.copyOf(java.lang.Object[], int) @bci=6, line=3181 (Compiled frame)
+#  - com.google.common.collect.ImmutableMap$Builder.ensureCapacity(int) @bci=23, line=235 (Compiled frame)
+#  - com.google.common.collect.ImmutableMap$Builder.put(java.lang.Object, java.lang.Object) @bci=7, line=247 (Compiled frame)
+#  ...
+#  - java.lang.Thread.run() @bci=11, line=748 (Interpreted frame)
+#
 # Example output:
 #
 #  MyProg;java.lang.Thread.run;java.net.SocketInputStream.read;java.net.SocketInputStream.socketRead0 1
@@ -160,7 +171,18 @@ clear:
 
 	} elsif (/java.lang.Thread.State: (\S+)/) {
 		$state = $1 if $state eq "?";
-	} elsif (/^\s*at ([^\(]*)/) {
+	} elsif (/(Thread \d+): \(state = (\S+)\)/) {
+		my $name = $1;
+		$state = $2 if $state eq "?";
+
+		# fix state for "jstack -F"
+		$state = "WAITING" if $state eq "BLOCKED";
+		$state = "RUNNABLE" if $state eq "IN_JAVA";
+		$state = "RUNNABLE" if $state eq "IN_NATIVE";
+		$state = "RUNNABLE" if $state eq "IN_NATIVE_TRANS";
+		$state = "RUNNABLE" if $state eq "IN_VM";
+
+	} elsif (/^\s*(?:at|-) ([^\(]*)/) {
 		my $func = $1;
 		if ($shorten_pkgs) {
 			my ($pkgs, $clsFunc) = ( $func =~ m/(.*\.)([^.]+\.[^.]+)$/ );
