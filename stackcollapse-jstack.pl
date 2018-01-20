@@ -181,6 +181,7 @@ clear:
 		$state = "NETWORK" if $func =~ /socketRead0$/;
 
 	} elsif (/^\s*-/ or /^2\d\d\d-/ or /^Full thread dump/ or
+		 /^\s*Locked ownable synchronizers:/ or
 		 /^JNI global references:/) {
 		# skip these info lines
 		next;
