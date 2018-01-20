@@ -190,7 +190,7 @@ clear:
 		my $should_collapse;
 		for my $collapse_frame (@collapse_frames) {
 			if ($func =~ m/$collapse_frame/) {
-				$should_collapse = 1;
+				$should_collapse = $collapse_frame;
 				print STDERR "should_collapse($func =~ m/$collapse_frame/)\n";
 				last; # No need to test other patterns
 			}
@@ -203,7 +203,7 @@ clear:
 		}
 
 		if ($should_collapse) {
-			$processes_func = "...";
+			$processes_func = $should_collapse ."...";
 		}
 
 		# Enqueue only if not already collapsed
