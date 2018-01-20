@@ -207,7 +207,7 @@ clear:
 		}
 
 		# Enqueue only if not already collapsed
-		unshift @stack, $processes_func unless $processes_func eq "..." && @stack && $stack[0] eq "...";
+		unshift @stack, $processes_func unless $should_collapse && @stack && $stack[0] eq $processes_func;
 
 		# fix state for epollWait
 		$state = "WAITING" if $func =~ /epollWait/;
