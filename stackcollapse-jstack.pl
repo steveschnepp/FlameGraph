@@ -65,6 +65,7 @@ my $include_tid = 0;		# include thread IDs in stacks
 my $shorten_pkgs = 0;		# shorten package names
 my @states = qw(RUNNABLE);	# thread states to consider
 my $help = 0;
+my $statistics = 0;
 my $quiet = 0;
 
 sub usage {
@@ -78,6 +79,7 @@ USAGE: $0 [options] infile > outfile\n
 	--no-shorten-pkgs  # (don't) shorten package names (default: don't shorten)
 	--state            # Include this thread state. Can be multiple (default: RUNNABLE)
 	                   # Note that there is are special states named "BACKGROUND" & "NETWORK"
+	--stats            # Emits some statistics about the threaddumps
 	--quiet            # Remove any warning, only emits errors
 
 	eg,
@@ -90,6 +92,7 @@ GetOptions(
 	'include-tid!'    => \$include_tid,
 	'shorten-pkgs!'   => \$shorten_pkgs,
 	'state=s'         => \@states,
+	'stats!'     => \$statistics,
 	'quiet!'          => \$quiet,
 	'help'            => \$help,
 ) or usage();
@@ -109,12 +112,15 @@ my $tname;
 my $state = "?";
 
 my %states_map = map {$_ => 1} @states;
+my %states_counter;
 
 while (<>) {
 	next if m/^#/;
 	chomp;
 
 	if (m/^$/) {
+		$states_counter{$state}++ if $state ne "?";
+
 		# only include RUNNABLE states
 		goto clear unless $states_map{ $state };
 
@@ -185,4 +191,10 @@ clear:
 
 foreach my $k (sort { $a cmp $b } keys %collapsed) {
 	print "$k $collapsed{$k}\n";
+}
+
+if ($statistics) {
+	foreach my $k (sort { $a cmp $b } keys %states_counter) {
+		print STDERR "$k: $states_counter{$k}\n";
+	}
 }
